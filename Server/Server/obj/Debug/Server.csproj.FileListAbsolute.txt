@@ -23,3 +23,4 @@ C:\Users\zhaba\Documents\GitHub\Kripta\Server\Server\bin\Debug\EntityFramework.d
 C:\Users\zhaba\Documents\GitHub\Kripta\Server\Server\bin\Debug\EntityFramework.SqlServer.dll
 C:\Users\zhaba\Documents\GitHub\Kripta\Server\Server\bin\Debug\EntityFramework.xml
 C:\Users\zhaba\Documents\GitHub\Kripta\Server\Server\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\zhaba\Documents\GitHub\Kripta\Server\Server\bin\Debug\SuperSimpleTcp.dll

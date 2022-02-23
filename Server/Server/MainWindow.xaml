@@ -6,41 +6,62 @@
         xmlns:local="clr-namespace:Server"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Форма регистрации" Height="500" Width="500" 
+        Title="Сервер" Height="500" Width="650" 
         VerticalAlignment="Center" HorizontalAlignment="Center">
     <Grid>
-        <Border MinWidth="400" MinHeight="400" Margin="15" Background="White" VerticalAlignment="Center" Padding="35" MaxWidth="900" CornerRadius="15">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="45" Color="#005b4f" ShadowDepth="3"/>
-            </Border.Effect>
-            <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="Регистрация клиента" 
+        <TabControl SelectionChanged="TabControl_SelectionChanged"
+            Style="{StaticResource MaterialDesignNavigatilRailTabControl}">
+            <TabItem x:Name="tabItemRegistration"
+                Header="Регистрация" MinWidth="150">
+                <Border MinWidth="400" MinHeight="400" Margin="15" Background="White" VerticalAlignment="Center" Padding="35" MaxWidth="900" CornerRadius="15">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="45" Color="#005b4f" ShadowDepth="3"/>
+                    </Border.Effect>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Регистрация клиента" 
                            FontSize="30" FontWeight="Bold" 
                            Margin="0, 0, 0, 20" 
                            HorizontalAlignment="Center"/>
-                <TextBox x:Name="enteredUserLogin" Margin="0, 0, 0, 20" 
+                        <TextBox x:Name="enteredUserLogin" Margin="0, 0, 0, 20" 
                          Width="200"
                          materialDesign:HintAssist.Hint="Введите логин"
                          Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                          HorizontalAlignment="Center"
                          />
-                <PasswordBox x:Name="enteredUserPassword" Margin="0, 0, 0, 20" 
+                        <PasswordBox x:Name="enteredUserPassword" Margin="0, 0, 0, 20" 
                              Width="200"
                              materialDesign:HintAssist.Hint="Введите пароль"
                              Style="{StaticResource MaterialDesignPasswordBox}"
                              HorizontalAlignment="Center"
                          />
-                <PasswordBox x:Name="enteredUserPasswordRepeat" Margin="0, 0, 0, 20" 
+                        <PasswordBox x:Name="enteredUserPasswordRepeat" Margin="0, 0, 0, 20" 
                              Width="200"
                              materialDesign:HintAssist.Hint="Введите пароль ещё раз"
                              Style="{StaticResource MaterialDesignPasswordBox}"
                              HorizontalAlignment="Center"
                          />
-                <Button HorizontalAlignment="Center" Content="Зарегистрировать" 
+                        <Button HorizontalAlignment="Center" Content="Зарегистрировать" 
                         Width="200" Margin="0, 0, 0, 20"
                         Style="{StaticResource MaterialDesignRaisedDarkButton}" 
                         Click="Button_Registration_Click"/>
-            </StackPanel>
-        </Border>
+                    </StackPanel>
+                </Border>
+            </TabItem>
+            <TabItem x:Name="tabItemListening"
+                Header="Прослушивание" MinWidth="150">
+                <StackPanel>
+                    <Button x:Name="btnStartServer" Content="Запустить сервер" 
+                            Width="200" Margin="20" HorizontalAlignment="Right"
+                            Style="{StaticResource MaterialDesignFlatSecondaryDarkBgButton}"
+                            Click="btnStartServer_Click"/>
+                    <TextBox x:Name="logger" Margin="20" IsEnabled="False"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}" 
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                             TextWrapping="Wrap"/>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+        
     </Grid>
 </Window>
