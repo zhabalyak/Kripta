@@ -24,12 +24,7 @@ namespace Client
     /// </summary>
     public partial class MainWindow : Window
     {
-        // адрес и порт сервера, к которому будем подключаться
-        //static int port = 8005; // порт сервера
-        //static string address = "127.0.0.1"; // адрес сервера
-        //static IPEndPoint ipPoint;
-        //static Socket socket;
-
+        SimpleTcpClient client;
         public MainWindow()
         {
             InitializeComponent();
@@ -61,6 +56,17 @@ namespace Client
 
             string recievedMessage = Encoding.UTF8.GetString(e.Data);
 
+            if (recievedMessage.Contains(Constants.REFUSE))
+            {
+                Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background, new System.Windows.Threading.DispatcherOperationCallback(delegate
+                {
+                    logger.Text += $"Сервер отказал в аутентификации.{Environment.NewLine}";
+                    return null;
+                }), null);
+
+                btnConnect.IsEnabled = true;
+            }
+
             if (recievedMessage.Contains(Constants.RECIEVE_MD5t_CODE))
             {
                 recievedMessage = recievedMessage.Replace(Constants.RECIEVE_MD5t_CODE, "");
@@ -81,8 +87,6 @@ namespace Client
                 return null;
             }), null);
         }
-
-        SimpleTcpClient client;
 
         private void Button_Connection_Click(object sender, RoutedEventArgs e)
         {
