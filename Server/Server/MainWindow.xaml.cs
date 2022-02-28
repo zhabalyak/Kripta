@@ -143,18 +143,18 @@ namespace Server
 
         private void Events_DataReceived(object sender, DataReceivedEventArgs e)
         {
-            Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background, new System.Windows.Threading.DispatcherOperationCallback(delegate
-            {
-                logger.Text += $"Клиент {e.IpPort}: {Encoding.UTF8.GetString(e.Data)}{Environment.NewLine}";
-                return null;
-            }), null);
-
             string recievedMessage = Encoding.UTF8.GetString(e.Data);
 
             if (recievedMessage.Contains(Constants.RECIEVE_LOGIN_CODE))
             {
                 recievedMessage = recievedMessage.Replace(Constants.RECIEVE_LOGIN_CODE, "");
                 bool loginExists = false;
+
+                Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background, new System.Windows.Threading.DispatcherOperationCallback(delegate
+                {
+                    logger.Text += $"<Клиент {e.IpPort}> : {recievedMessage}{Environment.NewLine}";
+                    return null;
+                }), null);
 
                 using (UserContext db = new UserContext())
                 {
@@ -164,7 +164,7 @@ namespace Server
                     {
                         if (u.Login.Equals(recievedMessage))
                         {
-                            if (u.TimeTermEnd.CompareTo(DateTime.Now) > 0)
+                            if (u.TimeTermEnd.CompareTo(DateTime.Now) < 0)
                             {
                                 u.Time = DateTime.Now;
                                 u.TimeTermEnd = DateTime.Now.AddDays(7);
@@ -183,16 +183,19 @@ namespace Server
                 {
                     Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background, new System.Windows.Threading.DispatcherOperationCallback(delegate
                     {
-                        logger.Text += $"Сервер: несуществующий логин. Отказано в аутентификации.{Environment.NewLine}";
+                        logger.Text += $"<Сервер> : несуществующий логин. Отказано в аутентификации.{Environment.NewLine}";
                         return null;
                     }), null);
 
-                    Send(Constants.REFUSE);
+                    Send(Constants.REFUSE, "");
                     server.DisconnectClient(e.IpPort);
+
+                    return;
                 }
                 else
                 {
-                    Send(Constants.SEND_MD5t_CODE + currentUserMD5t);
+                    Send(Constants.SEND_MD5t_CODE, currentUserMD5t);
+                    return;
                 }
             }
 
@@ -200,31 +203,46 @@ namespace Server
             {
                 recievedMessage = recievedMessage.Replace(Constants.RECIEVE_MD5HASH_CODE, "");
 
+                Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background, new System.Windows.Threading.DispatcherOperationCallback(delegate
+                {
+                    logger.Text += $"<Клиент {e.IpPort}> : {recievedMessage}{Environment.NewLine}";
+                    return null;
+                }), null);
+
                 string MD5HashOnServer = currentUserLogin + GetMD5Hash(currentUserMD5Password + currentUserMD5t);
 
                 if (!MD5HashOnServer.Equals(recievedMessage))
                 {
                     Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background, new System.Windows.Threading.DispatcherOperationCallback(delegate
                     {
-                        logger.Text += $"Сервер: получена неверная свёртка (пароль неверный). Отказано в аутентификации.{Environment.NewLine}";
+                        logger.Text += $"<Сервер> : получена неверная свёртка (пароль неверный). Отказано в аутентификации.{Environment.NewLine}";
                         return null;
                     }), null);
 
-                    Send(Constants.REFUSE);
+                    Send(Constants.REFUSE, "");
                     server.DisconnectClient(e.IpPort);
+
+                    return;
                 }
                 else
                 {
-                    Send("Поздравляю с аутентификацией");
+                    Send("", "Поздравляю с аутентификацией");
+                    return;
                 }
             }
+
+            Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background, new System.Windows.Threading.DispatcherOperationCallback(delegate
+            {
+                logger.Text += $"<Клиент {e.IpPort}> : {Encoding.UTF8.GetString(e.Data)}{Environment.NewLine}";
+                return null;
+            }), null);
         }
 
         private void Events_ClientDisconnected(object sender, ConnectionEventArgs e)
         {
             Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background, new System.Windows.Threading.DispatcherOperationCallback(delegate
             {
-                logger.Text += $"Клиент {e.IpPort} отключился.{Environment.NewLine}";
+                logger.Text += $"<Клиент {e.IpPort} отключился.>{Environment.NewLine}";
                 clientIp = null;
                 return null;
             }), null);
@@ -234,7 +252,7 @@ namespace Server
         {
             Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background, new System.Windows.Threading.DispatcherOperationCallback(delegate
             {
-                logger.Text += $"Клиент {e.IpPort} пробует подключиться.{Environment.NewLine}";
+                logger.Text += $"<Клиент {e.IpPort} пробует подключиться.>{Environment.NewLine}";
                 clientIp = e.IpPort;
                 return null;
             }), null);
@@ -243,20 +261,20 @@ namespace Server
         private void btnStartServer_Click(object sender, RoutedEventArgs e)
         {
             server.Start();
-            logger.Text += $"Сервер запущен, ожидается подключение...{Environment.NewLine}";
+            logger.Text += $"<Сервер запущен, ожидается подключение...>{Environment.NewLine}";
             btnStartServer.IsEnabled = false;
         }
 
-        private void Send(string message)
+        private void Send(string code, string message)
         {
             if (server.IsListening)
             {
                 if (!string.IsNullOrEmpty(message) && clientIp != null)
                 {
-                    server.Send(clientIp, message);
+                    server.Send(clientIp, code + message);
                     Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background, new System.Windows.Threading.DispatcherOperationCallback(delegate
                     {
-                        logger.Text += $"Сервер: {message}{Environment.NewLine}";
+                        logger.Text += $"<Сервер> : {message}{Environment.NewLine}";
                         return null;
                     }), null);
                     message = string.Empty;
