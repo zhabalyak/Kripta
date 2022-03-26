@@ -49,17 +49,41 @@
             </TabItem>
             <TabItem x:Name="tabItemListening"
                 Header="Прослушивание" MinWidth="150">
-                <StackPanel>
-                    <Button x:Name="btnStartServer" Content="Запустить сервер" 
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="250"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <StackPanel>
+                            <Button x:Name="btnStartServer" Content="Запустить сервер" 
                             Width="200" Margin="20" HorizontalAlignment="Right"
                             Style="{StaticResource MaterialDesignFlatSecondaryDarkBgButton}"
                             Click="btnStartServer_Click"/>
-                    <TextBox x:Name="logger" Margin="20" IsEnabled="False"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}" 
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                             ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                             TextWrapping="Wrap"/>
-                </StackPanel>
+                            <TextBlock x:Name="key" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="tbDigital_Signature" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <TextBox x:Name="logger" Margin="20" IsReadOnly="True"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" 
+                                 TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                 AcceptsReturn="True" TextAlignment="Left"/>
+                    </Grid>
+                    <Grid x:Name="gridSend" Grid.Row="2">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox x:Name="tbSendMessage" Margin="20" Width="250"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" 
+                                 TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                 AcceptsReturn="True" TextAlignment="Left"/>
+                            <Button x:Name="btnSendMessage" Content="Отправить" IsEnabled="False"
+                                    Width="150" Margin="20" HorizontalAlignment="Right"
+                                    Style="{StaticResource MaterialDesignFlatSecondaryDarkBgButton}"
+                                    Click="btnSendMessage_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
             </TabItem>
         </TabControl>
         
